@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Connect TON Wallet</title>
+    <script src="https://unpkg.com/@tonconnect/sdk@latest/dist/tonconnect-sdk.min.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+        #connectButton {
+            padding: 10px 20px;
+            font-size: 18px;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    <button id="connectButton">Connect TON Wallet</button>
+
+    <script>
+        const tonConnectSDK = new TonConnect({
+            manifestUrl: 'https://your-game-website.com/tonconnect-manifest.json'
+        });
+
+        document.getElementById('connectButton').addEventListener('click', async () => {
+            try {
+                await tonConnectSDK.connect();
+                const wallet = tonConnectSDK.wallet;
+                if (wallet) {
+                    alert(`Wallet connected! Address: ${wallet.account.address}`);
+                    // Here you can send the wallet address back to your Telegram bot
+                    // For example, using the Telegram WebApp API:
+                    if (window.Telegram && window.Telegram.WebApp) {
+                        window.Telegram.WebApp.sendData(JSON.stringify({
+                            action: 'wallet_connected',
+                            address: wallet.account.address
+                        }));
+                    }
+                }
+            } catch (error) {
+                console.error('Failed to connect wallet:', error);
+                alert('Failed to connect wallet. Please try again.');
+            }
+        });
+    </script>
+</body>
+</html>
